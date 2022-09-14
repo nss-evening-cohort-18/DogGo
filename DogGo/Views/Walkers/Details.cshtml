@@ -1,13 +1,13 @@
 ﻿@model DogGo.Models.Walker
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "DogGo Walker";
 }
 
-<h1>Details</h1>
+<h1>@Model.Name</h1>
 
 <div>
-    <h4>Walker</h4>
+    <h4>Id #@Model.Id.ToString("D5")</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">

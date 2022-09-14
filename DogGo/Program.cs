@@ -5,6 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddTransient<IWalkerRepository, WalkerRepository>();
+builder.Services.AddTransient<IOwnerRepository, OwnerRepository>();
 
 var app = builder.Build();
 
