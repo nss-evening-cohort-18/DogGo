@@ -7,10 +7,12 @@ namespace DogGo.Controllers
     public class OwnersController : Controller
     {
         private readonly IOwnerRepository _ownerRepo;
+        private readonly IDogRepository _dogRepo;
 
-        public OwnersController(IOwnerRepository ownerRepo)
+        public OwnersController(IOwnerRepository ownerRepo, IDogRepository dogRepo)
         {
             _ownerRepo = ownerRepo;
+            _dogRepo = dogRepo;
         }
 
         // GET: OwnersController
@@ -25,6 +27,10 @@ namespace DogGo.Controllers
         public ActionResult Details(int id)
         {
             var owner = _ownerRepo.GetOwnerById(id);
+            if (owner != null)
+            {
+                owner.Dogs = _dogRepo.GetDogsByOwnerId(id);
+            }
 
             return View(owner);
         }
