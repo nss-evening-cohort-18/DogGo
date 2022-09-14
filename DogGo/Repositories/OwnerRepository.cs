@@ -5,13 +5,15 @@ namespace DogGo.Repositories
 {
     public class OwnerRepository : BaseRepository, IOwnerRepository
     {
-        private readonly string _baseSqlSelect = @"SELECT Id,
+        private readonly string _baseSqlSelect = @"SELECT [Owner].Id,
                                                    	      Email,
-                                                   	      [Name],
+                                                   	      [Owner].[Name],
                                                    	      [Address],
                                                    	      NeighborhoodId,
+                                                          Neighborhood.[Name] AS NeighborhoodName,
                                                    	      Phone
-                                                   FROM [Owner] ";
+                                                   FROM [Owner]
+                                                   INNER JOIN Neighborhood ON Neighborhood.Id = NeighborhoodId";
         public OwnerRepository(IConfiguration config) : base(config) { }
 
         public List<Owner> GetAllOwners()
@@ -44,7 +46,7 @@ namespace DogGo.Repositories
                 conn.Open();
                 using (var cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = $"{_baseSqlSelect} WHERE Id = @Id";
+                    cmd.CommandText = $"{_baseSqlSelect} WHERE [Owner].Id = @Id";
                     cmd.Parameters.AddWithValue("@Id", id);
 
                     using (var reader = cmd.ExecuteReader())
@@ -71,6 +73,7 @@ namespace DogGo.Repositories
                 Name = reader.GetString(reader.GetOrdinal("Name")),
                 Address = reader.GetString(reader.GetOrdinal("Address")),
                 NeighborhoodId = reader.GetInt32(reader.GetOrdinal("NeighborhoodId")),
+                Neighborhood = new Neighborhood { Name = reader.GetString(reader.GetOrdinal("NeighborhoodName")) },
                 Phone = reader.GetString(reader.GetOrdinal("Phone")),
             };
         }

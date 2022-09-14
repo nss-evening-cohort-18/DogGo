@@ -8,11 +8,13 @@ public class WalkerRepository : BaseRepository, IWalkerRepository
     // The constructor accepts an IConfiguration object as a parameter. This class comes from the ASP.NET framework and is useful for retrieving things out of the appsettings.json file like connection strings.
     public WalkerRepository(IConfiguration config) : base(config) { }
 
-    private readonly string _baseSqlSelect = @"SELECT Id,
-                                                      [Name], 
+    private readonly string _baseSqlSelect = @"SELECT Walker.Id,
+                                                      Walker.[Name], 
                                                       ImageUrl, 
-                                                      NeighborhoodId
-                                               FROM Walker ";
+                                                      NeighborhoodId,
+                                                      Neighborhood.Name AS NeighborhoodName
+                                               FROM Walker
+                                               INNER JOIN Neighborhood ON Neighborhood.Id = NeighborhoodId ";
 
     public List<Walker> GetAllWalkers()
     {
@@ -45,7 +47,7 @@ public class WalkerRepository : BaseRepository, IWalkerRepository
             conn.Open();
             using (SqlCommand cmd = conn.CreateCommand())
             {
-                cmd.CommandText = $"{_baseSqlSelect} WHERE Id = @id";
+                cmd.CommandText = $"{_baseSqlSelect} WHERE Walker.Id = @id";
 
                 cmd.Parameters.AddWithValue("@id", id);
 
@@ -70,7 +72,8 @@ public class WalkerRepository : BaseRepository, IWalkerRepository
             Id = reader.GetInt32(reader.GetOrdinal("Id")),
             Name = reader.GetString(reader.GetOrdinal("Name")),
             ImageUrl = reader.GetString(reader.GetOrdinal("ImageUrl")),
-            NeighborhoodId = reader.GetInt32(reader.GetOrdinal("NeighborhoodId"))
+            NeighborhoodId = reader.GetInt32(reader.GetOrdinal("NeighborhoodId")),
+            Neighborhood = new Neighborhood { Name = reader.GetString(reader.GetOrdinal("NeighborhoodName")) }
         };
     }
 }

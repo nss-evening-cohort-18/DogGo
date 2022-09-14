@@ -26,7 +26,7 @@ namespace DogGo.Controllers
         {
             var owner = _ownerRepo.GetOwnerById(id);
 
-            return View(id);
+            return View(owner);
         }
 
         // GET: OwnersController/Create
