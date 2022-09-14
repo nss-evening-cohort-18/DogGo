@@ -4,11 +4,11 @@ namespace DogGo.Repositories;
 
 public abstract class BaseRepository
 {
-    private readonly IConfiguration _config;
+    private readonly string _connectionString;
     protected BaseRepository(IConfiguration config)
     {
-        _config = config;
+        _connectionString = config.GetConnectionString("DefaultConnection");
     }
 
-    public SqlConnection Connection => new SqlConnection(_config.GetConnectionString("DefaultConnection"));
+    public SqlConnection Connection => new SqlConnection(_connectionString);
 }
