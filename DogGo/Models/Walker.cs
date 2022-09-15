@@ -9,5 +9,5 @@ public class Walker
     public int NeighborhoodId { get; set; }
     [Display(Name = "Avatar")]
     public string ImageUrl { get; set; }
-    public Neighborhood Neighborhood { get; set; }
+    public Neighborhood Neighborhood { get; set; } = new Neighborhood();
 }
