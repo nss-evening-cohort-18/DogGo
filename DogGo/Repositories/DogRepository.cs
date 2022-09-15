@@ -1,4 +1,6 @@
-﻿using DogGo.Models;
+﻿using System.Text;
+using DogGo.Models;
+using DogGo.Models.Filters;
 using Microsoft.Data.SqlClient;
 
 namespace DogGo.Repositories
@@ -12,44 +14,30 @@ namespace DogGo.Repositories
                                                    	   ISNULL(Notes, '') AS Notes,
                                                    	   ISNULL(ImageUrl, '') AS ImageUrl
                                                    FROM Dog ";
+
+        private string _sqlWhere = "";
+
         public DogRepository(IConfiguration config) : base(config) { }
 
-        public List<Dog> GetDogsByOwnerId(int ownerId)
+        public List<Dog> GetDogs(DogFilter? filter = null)
         {
             using (var conn = Connection)
             {
                 conn.Open();
                 using (var cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = $"{_baseSqlSelect} WHERE OwnerId = @OwnerId ";
-                    cmd.Parameters.AddWithValue("@OwnerId", ownerId);
 
-                    using (var reader = cmd.ExecuteReader())
+                    if (filter != null)
                     {
-                        List<Dog> results = new();
-                        
-                        while (reader.Read())
-                        {
-                            results.Add(LoadFromData(reader));
-                        }
-                        
-                        return results;
+                        CreateSqlWhere(filter, cmd);
                     }
-                }
-            }
-        }
 
-        public List<Dog> GetAllDogs()
-        {
-            using (var conn = Connection)
-            {
-                conn.Open();
-                using (var cmd = conn.CreateCommand())
-                {
-                    cmd.CommandText = _baseSqlSelect;
+                    cmd.CommandText = $"{_baseSqlSelect} {_sqlWhere}";
+
                     using (var reader = cmd.ExecuteReader())
                     {
                         List<Dog> results = new();
+
                         while (reader.Read())
                         {
                             results.Add(LoadFromData(reader));
@@ -58,30 +46,8 @@ namespace DogGo.Repositories
                     }
                 }
             }
+
         }
-
-        public Dog? GetDogById(int id)
-        {
-            using (var conn = Connection)
-            {
-                conn.Open();
-                using (var cmd = conn.CreateCommand())
-                {
-                    cmd.CommandText = $"{_baseSqlSelect} WHERE Id = @Id ";
-                    cmd.Parameters.AddWithValue("@Id", id);
-
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                             return LoadFromData(reader);
-                        }
-                        return null;
-                    }
-                }
-            }
-        }
-
         public void AddDog(Dog dog)
         {
             using (var conn = Connection)
@@ -114,13 +80,12 @@ namespace DogGo.Repositories
                 }
             }
         }
-
         public void UpdateDog(Dog dog)
         {
-            using ( var conn = Connection)
+            using (var conn = Connection)
             {
                 conn.Open();
-                using ( var cmd = conn.CreateCommand())
+                using (var cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"UPDATE Dog
                                         SET
@@ -142,7 +107,6 @@ namespace DogGo.Repositories
                 }
             }
         }
-
         public void DeleteDog(int id)
         {
             using (SqlConnection conn = Connection)
@@ -158,6 +122,36 @@ namespace DogGo.Repositories
                     cmd.ExecuteNonQuery();
                 }
             }
+        }
+        private void CreateSqlWhere(DogFilter filter, SqlCommand cmd)
+        {
+            List<string> conditions = new List<string>();
+
+            if (filter.Id != null)
+            {
+                conditions.Add("Id = @Id");
+                cmd.Parameters.AddWithValue("@Id", filter.Id);
+            }
+
+            if (filter.Name != null)
+            {
+                conditions.Add("Name = @Name");
+                cmd.Parameters.AddWithValue("@Name", filter.Name);
+            }
+
+            if (filter.OwnerId != null) 
+            { 
+                conditions.Add("OwnerId = @OwnerId");
+                cmd.Parameters.AddWithValue("@OwnerId", filter.OwnerId);
+            }
+
+            if (filter.Breed != null) 
+            { 
+                conditions.Add("Breed = @Breed"); 
+                cmd.Parameters.AddWithValue("@Breed", filter.Breed);
+            }
+
+            _sqlWhere = $" WHERE {String.Join(" AND ", conditions)} ";
         }
         private Dog LoadFromData(SqlDataReader reader)
         {

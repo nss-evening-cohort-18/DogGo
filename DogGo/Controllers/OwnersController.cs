@@ -1,4 +1,5 @@
 ﻿using DogGo.Models;
+using DogGo.Models.Filters;
 using DogGo.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -9,11 +10,16 @@ namespace DogGo.Controllers
     {
         private readonly IOwnerRepository _ownerRepo;
         private readonly IDogRepository _dogRepo;
+        private readonly IWalkerRepository _walkerRepo;
 
-        public OwnersController(IOwnerRepository ownerRepo, IDogRepository dogRepo)
+        public OwnersController(
+            IOwnerRepository ownerRepo,
+            IDogRepository dogRepo,
+            IWalkerRepository walkerRepo)
         {
             _ownerRepo = ownerRepo;
             _dogRepo = dogRepo;
+            _walkerRepo = walkerRepo;
         }
 
         // GET: OwnersController
@@ -30,7 +36,7 @@ namespace DogGo.Controllers
             var owner = _ownerRepo.GetOwnerById(id);
             if (owner != null)
             {
-                owner.Dogs = _dogRepo.GetDogsByOwnerId(id);
+                owner.Dogs = _dogRepo.GetDogs(new DogFilter { OwnerId = id});
             }
 
             return View(owner);

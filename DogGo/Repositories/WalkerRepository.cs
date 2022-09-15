@@ -65,6 +65,31 @@ public class WalkerRepository : BaseRepository, IWalkerRepository
         }
     }
 
+    public List<Walker> GetWalkersByNeighborhood(int neighborhoodId)
+    {
+        using (SqlConnection conn = Connection)
+        {
+            conn.Open();
+            using (SqlCommand cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = $"{_baseSqlSelect} WHERE Walker.NeighborhoodId = @NeighborhoodId";
+
+                cmd.Parameters.AddWithValue("@NeighborhoodId", neighborhoodId);
+
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    List<Walker> results = new List<Walker>();
+                    while (reader.Read())
+                    {
+                        results.Add(LoadFromData(reader));
+                    }
+
+                    return results;
+                }
+            }
+        }
+    }
+
     private Walker LoadFromData(SqlDataReader reader)
     {
         return new Walker

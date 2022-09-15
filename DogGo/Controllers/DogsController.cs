@@ -1,4 +1,5 @@
 ﻿using DogGo.Models;
+using DogGo.Models.Filters;
 using DogGo.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,14 +18,14 @@ namespace DogGo.Controllers
         // GET: DogsController
         public ActionResult Index()
         {
-            var dogs = _dogRepo.GetAllDogs();
+            List<Dog> dogs = _dogRepo.GetDogs();
             return View(dogs);
         }
 
         // GET: DogsController/Details/5
         public ActionResult Details(int id)
         {
-            var dog = _dogRepo.GetDogById(id);
+            Dog? dog = _dogRepo.GetDogs(new DogFilter { Id = id}).FirstOrDefault();
             return View(dog);
         }
 
@@ -53,7 +54,7 @@ namespace DogGo.Controllers
         // GET: DogsController/Edit/5
         public ActionResult Edit(int id)
         {
-            var dog = _dogRepo.GetDogById(id);
+            Dog? dog = _dogRepo.GetDogs(new DogFilter { Id = id} ).FirstOrDefault();
             return View(dog);
         }
 
@@ -76,7 +77,7 @@ namespace DogGo.Controllers
         // GET: DogsController/Delete/5
         public ActionResult Delete(int id)
         {
-            var dog = _dogRepo.GetDogById(id);
+            Dog? dog = _dogRepo.GetDogs(new DogFilter { Id = id }).FirstOrDefault();
             return View(dog);
         }
 

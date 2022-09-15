@@ -6,4 +6,5 @@ public interface IWalkerRepository
 {
     List<Walker> GetAllWalkers();
     Walker? GetWalkerById(int id);
+    List<Walker> GetWalkersByNeighborhood(int neighborhoodId);
 }
