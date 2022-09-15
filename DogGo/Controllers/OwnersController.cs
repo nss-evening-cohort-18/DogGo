@@ -12,15 +12,18 @@ namespace DogGo.Controllers
         private readonly IOwnerRepository _ownerRepo;
         private readonly IDogRepository _dogRepo;
         private readonly IWalkerRepository _walkerRepo;
+        private readonly INeighborhoodRepository _neighborhoodRepo;
 
         public OwnersController(
             IOwnerRepository ownerRepo,
             IDogRepository dogRepo,
-            IWalkerRepository walkerRepo)
+            IWalkerRepository walkerRepo,
+            INeighborhoodRepository neighborhoodRepo)
         {
             _ownerRepo = ownerRepo;
             _dogRepo = dogRepo;
             _walkerRepo = walkerRepo;
+            _neighborhoodRepo = neighborhoodRepo;
         }
 
         // GET: OwnersController
@@ -34,14 +37,15 @@ namespace DogGo.Controllers
         // GET: OwnersController/Details/5
         public ActionResult Details(int id)
         {
-            var owner = _ownerRepo.GetOwnerById(id);
-            var dogs = _dogRepo.GetDogs(new DogFilter { OwnerId = id });
-            var walkers = _walkerRepo.GetWalkersByNeighborhood(owner.NeighborhoodId);
+            //TODO - figure out why this happens twice for owner 1.
+            Owner owner = _ownerRepo.GetOwnerById(id);
+            if (owner == null) { return NotFound(); }//added this to get around the random double load for Owner 1
+            owner.Dogs = _dogRepo.GetDogs(new DogFilter { OwnerId = id });
+            List<Walker> walkers = _walkerRepo.GetWalkersByNeighborhood(owner.NeighborhoodId);
 
             ProfileViewModel vm = new()
             {
                 Owner = owner,
-                Dogs = dogs,
                 Walkers = walkers,
             };
 
@@ -51,7 +55,13 @@ namespace DogGo.Controllers
         // GET: OwnersController/Create
         public ActionResult Create()
         {
-            return View();
+            var vm = new OwnerFormViewModel()
+            {
+                Owner = new Owner(),
+                Neighborhoods = _neighborhoodRepo.GetAllNeighborhoods(),
+            };
+
+            return View(vm);
         }
 
         // POST: OwnersController/Create
@@ -64,7 +74,7 @@ namespace DogGo.Controllers
                 _ownerRepo.AddOwner(newOwner);
                 return RedirectToAction(nameof(Index));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return View(newOwner);
             }
@@ -94,7 +104,7 @@ namespace DogGo.Controllers
 
                 return RedirectToAction(nameof(Index));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return View(owner);
             }
