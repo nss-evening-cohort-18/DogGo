@@ -1,5 +1,6 @@
 ﻿using DogGo.Models;
 using DogGo.Models.Filters;
+using DogGo.Models.ViewModels;
 using DogGo.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -34,12 +35,17 @@ namespace DogGo.Controllers
         public ActionResult Details(int id)
         {
             var owner = _ownerRepo.GetOwnerById(id);
-            if (owner != null)
-            {
-                owner.Dogs = _dogRepo.GetDogs(new DogFilter { OwnerId = id});
-            }
+            var dogs = _dogRepo.GetDogs(new DogFilter { OwnerId = id });
+            var walkers = _walkerRepo.GetWalkersByNeighborhood(owner.NeighborhoodId);
 
-            return View(owner);
+            ProfileViewModel vm = new()
+            {
+                Owner = owner,
+                Dogs = dogs,
+                Walkers = walkers,
+            };
+
+            return View(vm);
         }
 
         // GET: OwnersController/Create
