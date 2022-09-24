@@ -10,10 +10,15 @@ public class Helpers
 
         StringBuilder results = new();
 
-        results.Append(timeSpan.Hours > 0 ? $"{timeSpan.Hours}hr" : "");
-        results.Append(timeSpan.Minutes > 0 ? $"{timeSpan.Minutes}min" : "");
-        results.Append(timeSpan.Seconds > 0 ? $"{timeSpan.Seconds}sec" : "");
+        results.Append(timeSpan.Hours > 0 ? $"{timeSpan.Hours} hr " : "");
+        results.Append(timeSpan.Minutes > 0 ? $"{timeSpan.Minutes} min " : "");
+        results.Append(timeSpan.Seconds > 0 ? $"{timeSpan.Seconds} sec " : "");
 
         return results.ToString();
+    }
+
+    public static int DurationFromMinutesToSeconds(int durationInMinutes)
+    {
+        return durationInMinutes * 60;
     }
 }

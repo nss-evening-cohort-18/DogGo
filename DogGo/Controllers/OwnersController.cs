@@ -38,7 +38,7 @@ namespace DogGo.Controllers
         public ActionResult Details(int id)
         {
             //TODO - figure out why this happens twice for owner 1.
-            Owner owner = _ownerRepo.GetOwnerById(id);
+            Owner? owner = _ownerRepo.GetOwnerById(id);
             if (owner == null) { return NotFound(); }//added this to get around the random double load for Owner 1
             owner.Dogs = _dogRepo.GetDogs(new DogFilter { OwnerId = id });
             List<Walker> walkers = _walkerRepo.GetWalkersByNeighborhood(owner.NeighborhoodId);

@@ -1,5 +1,6 @@
 ﻿using DogGo.Models;
 using Microsoft.Data.SqlClient;
+using DogGo.Helpers;
 
 namespace DogGo.Repositories;
 
@@ -39,6 +40,33 @@ public class WalkRepository : BaseRepository, IWalkRepository
 
                     return results;
                 }
+            }
+        }
+    }
+
+    public void CreateWalk(Walk walk)
+    {
+        using (var conn = Connection)
+        {
+            conn.Open();
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = @"INSERT INTO Walks (
+                                      [Date],
+                                      Duration,
+                                      WalkerId,
+                                      DogId)
+                                    VALUES (
+                                      @Date,
+                                      @Duration,
+                                      @WalkerId,
+                                      @DogId) ";
+                cmd.Parameters.AddWithValue("@Date", walk.Date);
+                cmd.Parameters.AddWithValue("@Duration", Helpers.Helpers.DurationFromMinutesToSeconds(walk.Duration));
+                cmd.Parameters.AddWithValue("@WalkerId", walk.WalkerId);
+                cmd.Parameters.AddWithValue("@DogId", walk.DogId);
+
+                cmd.ExecuteNonQuery();
             }
         }
     }

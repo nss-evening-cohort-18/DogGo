@@ -1,0 +1,59 @@
+﻿@model DogGo.Models.ViewModels.WalkCreateViewModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>WalkCreateViewModel</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Walk.WalkerId" class="control-label"></label>
+                <select asp-for="Walk.WalkerId" class="form-control">
+                    <option value="">Select Walker</option>
+                    @foreach (Walker walker in Model.WalkerOptions)
+                    {
+                        <option value="@walker.Id">@walker.Name</option>
+                    }
+                </select>
+                <span asp-validation-for="Walk.WalkerId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SelectedDogIds" class="control-label"></label>
+                <select multiple asp-for="SelectedDogIds" class="form-control">
+                    <option value="">Select Dogs</option>
+                    @foreach (Dog dog in Model.DogOptions)
+                    {
+                        <option value="@dog.Id">@dog.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Walk.Duration" class="control-label">Duration in minutes</label>
+                <input asp-for="Walk.Duration" class="form-control" type="number"/>
+                
+            </div>
+            <div class="form-group">
+                <label asp-for="Walk.Date" class="control-label">Date</label>
+                <input asp-for="Walk.Date" class="form-control" type="date"/>
+                
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

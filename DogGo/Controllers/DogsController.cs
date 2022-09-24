@@ -25,7 +25,7 @@ namespace DogGo.Controllers
         // GET: DogsController/Details/5
         public ActionResult Details(int id)
         {
-            Dog? dog = _dogRepo.GetDogs(new DogFilter { Id = id}).FirstOrDefault();
+            Dog? dog = _dogRepo.GetDogs(new DogFilter { Id = id }).FirstOrDefault();
             return View(dog);
         }
 
